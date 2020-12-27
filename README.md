@@ -19,7 +19,7 @@ Tangram is linked from a CDN, so does not need to be installed.
 
 ## Working demo
 
-A working demo is available [here](http://35.177.54.109). It covers only West Susex, Hampshire, Wiltshire, Surrey, Buckinghamshire and Cumbria. No search facility as yet but you can supply `lat` and `lon` query string variables and it will locate to that position.
+A working demo is available [here](http://35.177.54.109). It covers only West Sussex, Hampshire, Wiltshire, Surrey, Buckinghamshire and Cumbria. No search facility as yet but you can supply `lat` and `lon` query string variables and it will locate to that position.
 
 ## Thanks!
 
