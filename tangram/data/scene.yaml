@@ -1,0 +1,653 @@
+cameras:
+    camera1:
+        type: perspective
+
+lights:
+    light1:
+        type: directional
+        direction: [0, 1, -.5]
+        diffuse: .3
+        ambient: 1
+
+sources:
+    walkersmap:
+        type: MVT
+        url: http://35.177.54.109/{z}/{x}/{y}.mvt?layers=lines,pois,polygons,land
+        max_zoom: 16
+        min_zoom: 11
+        tile_size: 512
+    terrain:
+        type: MVT
+        url: http://35.177.54.109/{z}/{x}/{y}.mvt?layers=contours
+        max_zoom: 16
+        min_zoom: 11
+        tile_size: 512
+scene:
+    background:
+        color: '#88bbee'
+
+fonts:
+    Montserrat:
+        url: fonts/montserrat.woff
+
+textures:
+    icons:
+        url: icons/sprites.png
+        sprites:
+            pub: [0, 0, 16, 16]
+            mast: [16, 0, 16, 16]
+            pylon: [32, 0, 16, 16]
+
+layers:
+    earth:
+        data: { source: walkersmap, layer: land }
+        draw:
+            polygons:
+                order: 0 
+                color: '#ddeeee'
+                outline:
+                    color: '#0000ff'
+                    width: 10
+
+    natural_and_water:
+        data: { source: walkersmap, layer: polygons }
+        filter:
+           all:
+               - [natural: [ wood, heath, water, beach, wetland ] , waterway: [river,stream], landuse: reservoir]
+               - $zoom: { min: 11 }
+        draw:
+            polygons:
+                order: 1
+            lines: 
+                color: '#808080'
+                width: 3
+                order: 3
+            text:
+                text_source: name
+                font:
+                    fill: black
+                    family: Montserrat
+                    size: 10
+        wood:
+            filter:
+                { natural: wood, $zoom: { min: 12 } }
+            draw:
+                polygons:
+                    color: '#aaffaa'
+        heath:
+            filter:
+                { natural: heath , $zoom: { min: 12 } }
+            draw:
+                polygons:
+                    color: '#f0e0a0'
+        beach:
+            filter:
+                { natural: beach, $zoom: { min: 12 } }
+            draw:
+                polygons:
+                    color: '#ffffc0'
+        wetland:
+            filter:
+                { natural: wetland, $zoom: { min: 12 } }
+            draw:
+                polygons:
+                    color: '#f0f0ff'
+        water:
+            filter:
+                [ natural: water, landuse: reservoir ]
+            draw:
+                polygons:
+                    order: 3
+                    color: '#88bbee'
+
+    water_linear:
+        data: { source: walkersmap, layer: lines }
+        water:
+            filter:
+                { waterway: [river, stream, canal], $zoom: { min: 11 } }
+            river:
+                filter:
+                    [waterway: [river, canal] ]
+                draw:
+                    lines:
+                        width: 24
+                        order: 3
+                        color: '#88bbee'
+                    text:
+                        font:
+                            size: 16
+                            fill: '#88bbee'
+                            family: Montserrat
+                        text_source: name
+                        offset: [0, -8px]
+            stream:
+                filter:
+                    {waterway: stream, $zoom: { min: 13 } }
+                draw:
+                    lines:
+                        width: 16
+                        order: 3
+                        color: '#88bbee'
+
+    landuse:
+        data: { source: walkersmap, layer: polygons }
+        draw:
+            polygons:
+                order: 2
+        forest:
+            filter: 
+                [landuse: forest]
+            draw:
+                polygons:
+                    color: '#aaeeaa'
+        military:
+            filter:
+                [military: firing_range]
+            draw:
+                polygons:
+                    color: '#ffc0c0'
+        park:
+            filter:
+                [leisure: [park, common] ]
+            draw:
+                polygons:
+                    color: '#e0ffe0'
+        urban:
+            filter:
+                [landuse: [residential, commercial, retail] ]
+            draw:
+                polygons:
+                    color: '#c0c0c0'
+        industrial:
+            filter:
+                [landuse: industrial]
+            draw:
+                polygons:
+                    color: '#a0a0a0'
+        
+    buildings:
+        data: { source: walkersmap, layer: polygons }
+        filter:
+            { building: true, $zoom: { min: 14 } }
+        draw:
+            polygons:
+                order: 3
+                color: '#ff8000'
+            lines:         
+                order: 4
+                color: black
+    
+    contour:
+        data: { source: terrain, layer: contours }
+        filter:
+            all:
+                - contourtype: true
+                - $zoom: { min: 14 } 
+        minor:
+            filter:
+                contourtype: minor 
+            draw:
+                lines:
+#                    color: '#fb9b67'
+                    color: '#c0c000'
+                    width: 3
+                    order: 2
+                text:
+                    font:
+                        size: 12px
+#                        fill: '#fb9b67'
+                        fill: '#c0c000'
+                        family: Montserrat
+                    text_source: height
+            lowzoom:
+                filter:
+                    $zoom: 14
+                draw:
+                    lines:
+                        width: 6
+        major:
+            filter:
+                contourtype: major 
+            draw:
+                lines:
+                    color: '#c0c000'
+                    width: 5
+                    order: 2
+                text:
+                    font:
+                        size: 12px
+#                       fill: '#fb9b67'
+                        fill: '#c0c000'
+                        family: Montserrat
+                    text_source: height
+            lowzoom:
+                filter:
+                    $zoom: 14
+                draw:
+                    lines:
+                        width: 10 
+    barrier:
+        data: { source: walkersmap, layer: pois }
+        filter: 
+            barrier: [ hedge, fence, wall, retaining_wall ]
+        draw:
+            lines:
+                color: '#808080'
+                width: 3
+                order: 3
+
+    power:
+        data: { source: walkersmap, layer: pois }
+        filter: 
+            all:
+                - power: [tower, line]
+                - $zoom: { min: 14}
+        powertower:
+            filter:
+                power: tower
+            draw:
+                points:
+                    texture: icons
+                    sprite: pylon
+                    order: 16
+        powerline:
+            filter:
+                power: line
+            draw:
+                lines:
+                    color: '#808080'
+                    width: 3
+                    order: 16
+    mast:
+        data: {source: walkersmap, layer: pois}
+        filter:
+            all:
+                - man_made: mast
+                - $zoom: { min: 14}
+        draw:
+            points:
+                texture: icons
+                sprite: mast
+                order: 16
+    pois:
+        data: { source: walkersmap, layer: pois }
+        filter: 
+            [ place: [village, hamlet, town, city, suburb], amenity: [pub, cafe], natural: peak ]
+        draw:
+            text:
+                order: 15
+        village:
+            filter:
+                place: village
+            normal:
+                filter:
+                    $zoom: { min: 14 }
+                draw:
+                    text:
+                        font:
+                            size: 18px 
+                            fill: black
+                            weight: 50
+                            family: Montserrat
+            lowzoom:
+                filter:
+                    $zoom: { min: 13, max: 14 }
+                draw:
+                    text:
+                        font:
+                            size: 12px 
+                            fill: black
+                            weight: 50
+        hamlet:
+            filter:
+                { place: [hamlet, suburb], $zoom: { min: 14 } }
+            draw:
+                text:
+                    font:
+                        size: 12px
+                        fill: black
+                        weight: 50
+                        family: Montserrat
+        town:
+            filter:
+                place: town
+            normal:
+                filter:
+                    $zoom: { min: 14}
+                draw:
+                    text:
+                        font:
+                            size: 24px
+                            fill: black 
+                            weight: 50
+                            family: Montserrat
+            lowzoom:
+                filter:
+                    $zoom: { min: 11, max: 14 }
+                draw:
+                    text:
+                        font:
+                            size: 18px 
+                            fill: black
+                            weight: 50
+                            family: Montserrat
+        city:
+            filter:
+                place: city 
+            normal:
+                filter:
+                    $zoom: { min: 14}
+                draw:
+                    text:
+                        font:
+                            size: 32px
+                            fill: black
+                            weight: 50
+                            family: Montserrat
+            lowzoom:
+                filter:
+                    $zoom: { min: 11, max: 14}
+                draw:
+                    text:
+                        font:
+                            size: 24px
+                            fill: black
+                            weight: 50
+                            family: Montserrat
+            vlowzoom:
+                filter:
+                    $zoom: { min: 7, max: 11}
+                draw:
+                    text:
+                        font:
+                            size: 18px
+                            fill: black
+                            weight: 50
+                            family: Montserrat
+
+        pub:
+            filter: 
+                { amenity: pub, $zoom: { min: 14}}
+            draw:
+                points:
+                    collide: false
+                    texture: icons
+                    sprite: pub
+                text:
+                    collide: false
+                    font:
+                        size: 10px
+                        fill: black    
+                        family: Montserrat
+        peak:
+            filter: 
+                { natural: peak, $zoom: { min: 13}}
+            draw:
+                text:
+                    font:
+                        size: 11
+                        fill: black    
+                        family: Montserrat
+
+    rows:
+        data: { source: walkersmap, layer: lines }
+        filter:
+            { $zoom: {min: 14} , [designation: true, foot: permissive] }
+        draw:
+            lines:
+                cap: round
+                order: 14
+            text:
+                text_source: prow_ref
+                anchor: top
+                offset: [0, -8px]
+                font:
+                    size: 10
+                    fill: black
+                    family: Montserrat
+        footpath:
+            filter:
+                designation: public_footpath
+            draw:
+                lines:
+                    color: '#ff0000'
+                    #color: green
+                    width: 12 
+                    dash: [2,2]
+                    cap: round
+            lowzoom:
+                filter:
+                    $zoom: 14
+                draw:
+                    lines:
+                        width: 12
+        bridleway:
+            filter:
+                designation: public_bridleway
+            draw:
+                lines:
+                    color: '#ff0000'
+#                    color: '#aa5500'
+                    width: 12 
+                    dash: [8,4]
+            lowzoom:
+                filter:
+                    $zoom: 14
+                draw:
+                    lines:
+                        width: 12
+        byway:
+            filter:
+                designation: [byway_open_to_all_traffic,restricted_byway]
+            draw:
+                lines:
+                    color: '#ff0000'
+                    width: 12 
+            lowzoom:
+                filter:
+                    $zoom: 14
+                draw:
+                    lines:
+                        width: 24 
+        permissive:
+            filter:
+                foot: permissive 
+            draw:
+                lines:
+                    color: '#ff80ff'
+#                    color: '#00c0c0'
+                    width: 12  
+                    dash: [2,2]
+
+    rail:
+        data: { source: walkersmap, layer: lines }
+        filter:
+            all:
+                - railway: [rail, station]
+                - $zoom: { min: 14}
+        railline:
+            filter:
+                railway: rail
+            draw:
+                lines:
+                    color: black
+                    order: 8
+                    width: 8
+                    dash: [4,4]
+                    outline:
+                        color: '#808080'
+                        width: 4
+                        order: 8
+                        dash: false
+            bridge:
+                filter:
+                    bridge: [yes,true]
+                draw:
+                    lines:
+                        order: 9
+            tunnel:
+                filter:
+                    tunnel: [yes,true]
+                draw:
+                    lines:
+                        dash: [2,4]
+                        outline: false
+        
+    roads:
+        data: { source: walkersmap, layer: lines }
+        filter:
+            highway: true
+    
+        tracks:
+            filter:
+                { highway: [track,byway], $zoom: { min: 14}}
+            draw:
+                lines:
+                    color: white 
+                    order: 8
+                    width: 18
+                    outline:
+                        order: 8
+                        color: '#808080' 
+                        width: 6 
+                        dash: [4,4]
+
+        paths:
+            filter:
+                all:
+                    - highway: [path,footway]
+                    - $zoom: {min: 14} 
+                    - not: 
+                        any:
+                            - designation: true
+                            - foot: permissive
+            draw:
+                lines:
+                    order: 14 
+                    color: black 
+                    width: 6
+                    dash: [2,2]
+
+        allroads:
+            filter:
+                highway: [motorway,motorway_link,trunk,trunk_link,primary,primary_link,secondary,secondary_link,service,tertiary,tertiary_link,unclassified,unclassified_link,residential,residential_link]
+       
+            designated_roads:
+                filter:
+                    { highway: [motorway, motorway_link, trunk, trunk_link, primary, primary_link, secondary, secondary_link], $zoom: { min: 14}}
+                draw:
+                    text:
+                        text_source: ref
+                        placement: midpoint
+
+            motorway:
+                filter:
+                    { highway: [motorway, motorway_link], $zoom: { min: 7}}
+                draw:
+                    lines:
+                        color: '#809bc0'
+            trunk:
+                filter:
+                    { highway: [trunk, trunk_link], $zoom: { min: 7}}
+                draw:
+                    lines:
+                        #color: '#cdeacd'
+                        color: '#88ae88'
+            primary:
+                filter:
+                    { highway: [primary, primary_link], $zoom: { min: 8}}
+                draw:
+                    lines:
+                        color: '#f4c3c4'
+                vlowzoom:
+                    filter: 
+                        { $zoom: { max: 12}}
+                    draw:
+                        lines:
+                            width: 192
+            secondary:
+                filter:
+                    { highway: [secondary, secondary_link] , $zoom: { min: 9}}
+                draw:
+                    lines:
+                        color: '#fee0b8'
+            tertiary:
+                filter:
+                    { highway: [tertiary, tertiary_link] , $zoom: {min: 10}}
+                draw:
+                    lines:
+                        color: '#ffffcc'
+
+            unclassified:
+                filter:
+                    { highway: [unclassified, unclassified_link], $zoom: {min: 12}}
+                    
+                draw:
+                    lines:
+                        color: '#ffffff'
+                lowzoom:
+                    filter: 
+                        { $zoom: {max: 14}}
+                    draw:
+                        lines:
+                            width: 64
+                            outline:
+                                width: 12
+                    
+            residential:
+                filter:
+                    { highway: [residential, residential_link, service], $zoom: {min: 14}}
+                    
+                draw:
+                    lines:
+                        color: white
+                        width: 18
+
+            bridge:
+                filter:
+                    bridge: [yes,true]
+                draw:
+                    lines:
+                        order: 9
+                        outline: false
+            tunnel:
+                filter:
+                    tunnel: [yes,true]
+                draw:
+                    lines:
+                        dash: [2,4]
+                        
+            draw:
+                lines:
+                    order: 8
+                    width: 24 
+                    cap: round 
+                    outline:
+                        color: '#8d4346'
+                        width: 4
+                        cap: round
+            normal:
+                filter:
+                    { $zoom: { min: 15}}
+                draw:
+                    text:
+                        font:    
+                            size: 12px
+                            family: Montserrat
+                            fill: black
+            lowzoom:
+                filter: 
+                    { $zoom: {min: 12, max: 14}}
+                draw:
+                    lines:
+                        width: 72 
+                        outline:
+                            width: 16
+            vlowzoom:
+                filter: 
+                    { $zoom: { max: 12}}
+                draw:
+                    lines:
+                        width: 192
+                        outline:
+                            width: 32
