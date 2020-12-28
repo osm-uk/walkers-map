@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^(\d+)\/(\d+)\/(\d+)\.mvt mvt.php?x=$2&y=$3&z=$1 [QSA]
