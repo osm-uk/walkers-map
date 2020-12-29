@@ -12,13 +12,13 @@ lights:
 sources:
     walkersmap:
         type: MVT
-        url: http://35.177.54.109/{z}/{x}/{y}.mvt?layers=lines,pois,polygons,land
+        url: http://35.177.54.109/tileserver/{z}/{x}/{y}.mvt?layers=lines,pois,polygons,land
         max_zoom: 16
         min_zoom: 11
         tile_size: 512
     terrain:
         type: MVT
-        url: http://35.177.54.109/{z}/{x}/{y}.mvt?layers=contours
+        url: http://35.177.54.109/tileserver/{z}/{x}/{y}.mvt?layers=contours
         max_zoom: 16
         min_zoom: 11
         tile_size: 512

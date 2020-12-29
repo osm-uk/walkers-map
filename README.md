@@ -27,8 +27,7 @@ My vision is to produce something like [Freemap Slovakia](https://freemap.sk).
 
 To work on the code you'll need an environment with:
 
-- Web server
-- PHP
+- Node.js 14+ 
 - Postgres and PostGIS 3+
 - An OSM database populated with [osm2pgsql](https://osm2pgsql.org)
 
