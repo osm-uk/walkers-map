@@ -1,0 +1,9 @@
+Approximate times for entire import process:
+
+Extracting relevants - 2hr30 
+Merging relevants - 55min
+Merging England/Wales - 1hr10
+osmpgsql population - 3hr15
+
+Other notes:
+increased limit on osmconvert from 10^10 to 1.5*10^10
