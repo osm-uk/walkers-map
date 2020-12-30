@@ -12,13 +12,13 @@ lights:
 sources:
     walkersmap:
         type: MVT
-        url: http://35.177.54.109/tileserver/{z}/{x}/{y}.mvt?layers=lines,pois,polygons,land
+        url: /tileserver/{z}/{x}/{y}.mvt?layers=lines,pois,polygons,land
         max_zoom: 16
         min_zoom: 11
         tile_size: 512
     terrain:
         type: MVT
-        url: http://35.177.54.109/tileserver/{z}/{x}/{y}.mvt?layers=contours
+        url: /tileserver/{z}/{x}/{y}.mvt?layers=contours
         max_zoom: 16
         min_zoom: 11
         tile_size: 512
@@ -62,12 +62,16 @@ layers:
                 color: '#808080'
                 width: 3
                 order: 3
-            text:
-                text_source: name
-                font:
-                    fill: black
-                    family: Montserrat
-                    size: 10
+        high_zoom:
+            filter: 
+                $zoom: { min: 14 }
+            draw:
+                text:
+                    text_source: name
+                    font:
+                        fill: black
+                        family: Montserrat
+                        size: 10
         wood:
             filter:
                 { natural: wood, $zoom: { min: 12 } }
@@ -99,6 +103,7 @@ layers:
                 polygons:
                     order: 3
                     color: '#88bbee'
+
 
     water_linear:
         data: { source: walkersmap, layer: lines }
@@ -236,28 +241,26 @@ layers:
                 width: 3
                 order: 3
 
-    power:
+    power_tower:
         data: { source: walkersmap, layer: pois }
         filter: 
-            all:
-                - power: [tower, line]
-                - $zoom: { min: 14}
-        powertower:
-            filter:
-                power: tower
-            draw:
-                points:
-                    texture: icons
-                    sprite: pylon
-                    order: 16
-        powerline:
-            filter:
-                power: line
-            draw:
-                lines:
-                    color: '#808080'
-                    width: 3
-                    order: 16
+            { power: tower, $zoom: { min: 14 } }
+        draw:
+            points:
+                texture: icons
+                sprite: pylon
+                order: 16
+
+    power_line:
+        data: { source: walkersmap, layer: lines  }
+        filter:
+            { power: line, $zoom: { min: 14 } }
+        draw:
+            lines:
+                color: '#808080'
+                width: 3
+                order: 16
+
     mast:
         data: {source: walkersmap, layer: pois}
         filter:
@@ -304,7 +307,7 @@ layers:
             draw:
                 text:
                     font:
-                        size: 12px
+                        size: 14px
                         fill: black
                         weight: 50
                         family: Montserrat
@@ -375,6 +378,7 @@ layers:
                     sprite: pub
                 text:
                     collide: false
+                    offset: [0, 12px]
                     font:
                         size: 10px
                         fill: black    
@@ -534,11 +538,127 @@ layers:
        
             designated_roads:
                 filter:
-                    { highway: [motorway, motorway_link, trunk, trunk_link, primary, primary_link, secondary, secondary_link], $zoom: { min: 14}}
-                draw:
-                    text:
-                        text_source: ref
-                        placement: midpoint
+                    highway: [motorway, motorway_link, trunk, trunk_link, primary, primary_link, secondary, secondary_link]
+
+                display_ref:
+                    filter:
+                        $zoom: { min: 14 }
+                    draw:
+                        text:
+                            text_source: ref
+                            placement: midpoint
+
+                lowzoom:
+                    filter:
+                        $zoom: { max : 12 }
+                    draw:
+                        lines:
+                            width: 192
+                            outline:
+                                width: 32
+
+                medzoom:
+                    filter:
+                        $zoom: { min: 12, max:  14 }
+                    draw:
+                        lines:
+                            width: 72 
+                            outline:
+                                width: 16
+                medzoom2:
+                    filter:
+                        $zoom: 14
+                    draw:
+                        lines:
+                            width: 48
+                            outline:
+                                width: 8
+
+                highzoom:
+                    filter:
+                        $zoom: { min: 15 }
+                    draw:
+                        lines:
+                            width: 48
+                            outline:
+                                width: 4 
+
+            minor_roads:
+                filter:
+                    highway : [ tertiary, tertiary_link, unclassified, unclassified_link]
+
+                lowzoom:
+                    filter:
+                        $zoom: { max : 12 }
+                    draw:
+                        lines:
+                            width: 128
+                            outline:
+                                width: 24
+
+                medzoom:
+                    filter:
+                        $zoom: { min: 12, max:  14 }
+                    draw:
+                        lines:
+                            width: 48
+                            outline:
+                                width: 12
+                medzoom2:
+                    filter:
+                        $zoom: 14
+                    draw:
+                        lines:
+                            width: 32
+                            outline:
+                                width: 6
+
+                highzoom:
+                    filter:
+                        $zoom: { min: 15 }
+                    draw:
+                        lines:
+                            width: 32
+                            outline:
+                                width: 3 
+
+            vminor_roads:
+                filter:
+                    highway: [residential, residential_link, service, track]
+                lowzoom:
+                    filter:
+                        $zoom: { max : 12 }
+                    draw:
+                        lines:
+                            width: 96
+                            outline:
+                                width: 16
+
+                medzoom:
+                    filter:
+                        $zoom: { min: 12, max:  14 }
+                    draw:
+                        lines:
+                            width: 36
+                            outline:
+                                width: 8
+
+                medzoom2:
+                    filter:
+                        $zoom: 14
+                    draw:
+                        lines:
+                            width: 24
+                            outline:
+                                width: 4
+                highzoom:
+                    filter:
+                        $zoom: { min: 15 }
+                    draw:
+                        lines:
+                            width: 24
+                            outline:
+                                width: 2
 
             motorway:
                 filter:
@@ -559,12 +679,6 @@ layers:
                 draw:
                     lines:
                         color: '#f4c3c4'
-                vlowzoom:
-                    filter: 
-                        { $zoom: { max: 12}}
-                    draw:
-                        lines:
-                            width: 192
             secondary:
                 filter:
                     { highway: [secondary, secondary_link] , $zoom: { min: 9}}
@@ -585,14 +699,6 @@ layers:
                 draw:
                     lines:
                         color: '#ffffff'
-                lowzoom:
-                    filter: 
-                        { $zoom: {max: 14}}
-                    draw:
-                        lines:
-                            width: 64
-                            outline:
-                                width: 12
                     
             residential:
                 filter:
@@ -601,7 +707,6 @@ layers:
                 draw:
                     lines:
                         color: white
-                        width: 18
 
             bridge:
                 filter:
@@ -620,13 +725,12 @@ layers:
             draw:
                 lines:
                     order: 8
-                    width: 24 
                     cap: round 
                     outline:
                         color: '#8d4346'
-                        width: 4
                         cap: round
-            normal:
+
+            highzoom:
                 filter:
                     { $zoom: { min: 15}}
                 draw:
@@ -635,19 +739,3 @@ layers:
                             size: 12px
                             family: Montserrat
                             fill: black
-            lowzoom:
-                filter: 
-                    { $zoom: {min: 12, max: 14}}
-                draw:
-                    lines:
-                        width: 72 
-                        outline:
-                            width: 16
-            vlowzoom:
-                filter: 
-                    { $zoom: { max: 12}}
-                draw:
-                    lines:
-                        width: 192
-                        outline:
-                            width: 32

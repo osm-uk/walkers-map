@@ -5,15 +5,15 @@ class TileModel {
         this.layerData = {
      
             'lines': {
-                'cols' : 'highway, name, designation, ref, foot, horse, bicycle, access, waterway, railway',
+                'cols' : 'highway, name, designation, ref, foot, horse, bicycle, access, waterway, railway, prow_ref, bridge, tunnel, power',
                 'table' : 'planet_osm_line'
             }, 
             'pois': {
-                'cols' : 'name, "natural", place, amenity, railway, railway',
+                'cols' : 'name, "natural", place, amenity, railway, power',
                 'table' : 'planet_osm_point'
             },
             'polygons': {
-                'cols' : 'name, "natural", landuse, military',
+                'cols' : 'name, "natural", landuse, military, building',
                 'table' : 'planet_osm_polygon'
             },
     
