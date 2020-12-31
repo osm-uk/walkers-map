@@ -12,13 +12,13 @@ lights:
 sources:
     walkersmap:
         type: MVT
-        url: /tileserver/{z}/{x}/{y}.mvt?layers=lines,pois,polygons,land
+        url: https://www.free-map.org.uk/tileserver/{z}/{x}/{y}.mvt?layers=lines,pois,polygons,land
         max_zoom: 16
         min_zoom: 11
         tile_size: 512
     terrain:
         type: MVT
-        url: /tileserver/{z}/{x}/{y}.mvt?layers=contours
+        url: https://www.free-map.org.uk/tileserver/{z}/{x}/{y}.mvt?layers=contours
         max_zoom: 16
         min_zoom: 11
         tile_size: 512
@@ -372,10 +372,6 @@ layers:
             filter: 
                 { amenity: pub, $zoom: { min: 14}}
             draw:
-                points:
-                    collide: false
-                    texture: icons
-                    sprite: pub
                 text:
                     collide: false
                     offset: [0, 12px]
@@ -383,6 +379,14 @@ layers:
                         size: 10px
                         fill: black    
                         family: Montserrat
+            highzoom:
+                filter:
+                    $zoom: { min: 15 }
+                draw:
+                    points:
+                        collide: false
+                        texture: icons
+                        sprite: pub
         peak:
             filter: 
                 { natural: peak, $zoom: { min: 13}}
